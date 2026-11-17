@@ -1,0 +1,4 @@
+/* Local copies so the app looks right offline. Both families are SIL Open Font License. */
+@font-face { font-family: "Cinzel"; font-weight: 700; font-display: swap; src: url("../fonts/cinzel-700.woff2") format("woff2"); }
+@font-face { font-family: "IM Fell English"; font-weight: 400; font-display: swap; src: url("../fonts/fell-400.woff2") format("woff2"); }
+@font-face { font-family: "IM Fell English"; font-weight: 400; font-style: italic; font-display: swap; src: url("../fonts/fell-400-italic.woff2") format("woff2"); }

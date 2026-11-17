@@ -1,0 +1,210 @@
+/* The Great Hall at Christmas. Layers, back to front: sky, clouds, banners, garland, trees, tables, candles, shade, snow, dais,
+   text, reveal, sparks, picker. */
+:root {
+  --night: #0b0a16;
+  --gold: #e2b13c;
+  --gold-soft: #f3d68a;
+  --parchment: #ead9b5;
+  --ink: #2a1d10;
+  --flame: #ffcf73;
+  --fell: "IM Fell English", Georgia, "Times New Roman", serif;
+  --cinzel: "Cinzel", "Trajan Pro", Georgia, serif;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; overflow: hidden; background: var(--night); color: var(--parchment); font-family: var(--fell); }
+
+.hall {
+  --dim: 0; /* 0 = candles lit, 1 = dark around the hat; set by Hall.setDim */
+  position: fixed; inset: 0; overflow: hidden;
+  background:
+    radial-gradient(ellipse 60% 45% at 50% 72%, rgba(255, 190, 90, .16), transparent 70%),
+    linear-gradient(#0b0a16 0%, #141024 45%, #1d1622 70%, #120d10 100%);
+}
+.sky, .sparks { position: absolute; inset: 0; width: 100%; height: 100%; }
+.sky { z-index: 0; }
+.clouds {
+  position: absolute; inset: 0 0 55% 0; z-index: 1; opacity: .55; filter: blur(10px);
+  background:
+    radial-gradient(ellipse 30% 18% at 20% 30%, rgba(160, 150, 200, .25), transparent 70%),
+    radial-gradient(ellipse 25% 14% at 72% 22%, rgba(160, 150, 200, .2), transparent 70%),
+    radial-gradient(ellipse 35% 16% at 50% 48%, rgba(120, 110, 170, .2), transparent 70%);
+  animation: drift 60s linear infinite alternate;
+}
+@keyframes drift { from { transform: translateX(-6%); } to { transform: translateX(6%); } }
+
+.banners { position: absolute; top: 0; left: 6%; right: 6%; z-index: 2; display: flex; justify-content: space-between; }
+.banner {
+  width: 9vw; height: 30vh; padding-top: 10vh; display: flex; align-items: center;
+  background:
+    linear-gradient(90deg, transparent 7%, rgba(226, 177, 60, .6) 7% calc(7% + 1px), transparent calc(7% + 1px) calc(93% - 1px), rgba(226, 177, 60, .6) calc(93% - 1px) 93%, transparent 93%),
+    linear-gradient(color-mix(in srgb, var(--house) 60%, #111), color-mix(in srgb, var(--house) 28%, #000));
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 86%, 0 100%);
+  writing-mode: vertical-rl; font-family: var(--cinzel); font-weight: 400; font-size: 1.1vw; letter-spacing: .4em;
+  text-transform: uppercase; color: #f6ead0; opacity: .85;
+  transform-origin: top center; animation: sway 7s ease-in-out infinite alternate; transition: opacity .6s, filter .6s;
+}
+.banner:nth-child(even) { animation-delay: -3.5s; }
+.banner.glow { opacity: 1; filter: brightness(1.35) drop-shadow(0 0 2vw var(--house)); }
+@keyframes sway { from { transform: rotate(-1.2deg); } to { transform: rotate(1.2deg); } }
+
+/* Christmas: a garland across the banners, two trees beside the dais, feast tables, and snow (drawn by hall.js). */
+.garland { position: absolute; top: 0; left: 0; width: 100%; height: 20vh; z-index: 2; pointer-events: none; }
+.tree { position: absolute; bottom: 21vh; width: 36vh; height: 50vh; z-index: 2; filter: drop-shadow(0 0 3vh rgba(255, 200, 110, .18)); }
+.tree.left { left: 12vw; }
+.tree.right { right: 12vw; }
+.tree svg { width: 100%; height: 100%; overflow: visible; }
+.star { fill: #f0c95e; stroke: #fff2b0; stroke-width: 1; animation: twinkle 1.8s ease-in-out infinite alternate; }
+
+.tables { position: absolute; left: 0; bottom: 0; width: 100%; height: 60vh; z-index: 2;
+  /* fade the far ends of the tables behind the stool so the hat isn't lost in their lights */
+  -webkit-mask-image: radial-gradient(ellipse 18% 44% at 50% 28%, rgba(0, 0, 0, .25), #000 100%);
+  mask-image: radial-gradient(ellipse 18% 44% at 50% 28%, rgba(0, 0, 0, .25), #000 100%); }
+.tables .halo { fill: var(--house, transparent); opacity: 0; filter: url(#halo); transition: opacity .8s; }
+.tables .table.glow .halo { opacity: 1; }
+.tables .cloth-top { fill: #5e1321; transition: fill .8s; }
+.tables .cloth-side { fill: #3e0b16; transition: fill .8s; }
+.tables .cloth-front { fill: #4b0e1b; transition: fill .8s; }
+.tables .table.glow .cloth-top { fill: color-mix(in srgb, var(--house) 70%, #5e1321); }
+.tables .table.glow .cloth-side { fill: color-mix(in srgb, var(--house) 55%, #3e0b16); }
+.tables .table.glow .cloth-front { fill: color-mix(in srgb, var(--house) 55%, #4b0e1b); }
+.tables .table.glow .trim { stroke: color-mix(in srgb, var(--house) 40%, #fff); }
+.tables .carpet { fill: #3e0b16; }
+.tables .carpet-edge { fill: none; stroke: var(--gold); stroke-width: 1.5; opacity: .6; }
+.tables .trim { fill: none; stroke: var(--gold); stroke-width: 1.5; opacity: .85; transition: stroke .8s; }
+.tables .trim.edge { stroke-width: 2; }
+.tables .bench-top { fill: #4a2e18; }
+.tables .bench-side { fill: #2b190c; }
+.tables .leg { fill: #24150a; }
+.tables .taper { fill: #f4ead0; }
+.tables .tflame { fill: #ffd27a; animation: candle 0.25s ease-in-out infinite alternate; }
+.tables .tglow { fill: rgba(255, 200, 110, .16); }
+.pine.p0 { fill: #1b4a2e; }
+.pine.p1 { fill: #24583a; }
+.pine.p2 { fill: #10301f; }
+.light { fill: var(--c); animation: twinkle 2.6s ease-in-out infinite alternate; }
+.bow { fill: #d8a93e; stroke: #8a6418; stroke-width: 1; }
+@keyframes twinkle { from { opacity: .55; } to { opacity: 1; } }
+@keyframes candle { from { opacity: .75; } to { opacity: 1; } }
+
+.snow { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 5; pointer-events: none; opacity: calc(1 - var(--dim) * .4); transition: opacity 1.2s; }
+
+.candles { position: absolute; inset: 0; z-index: 3; pointer-events: none; }
+.candle {
+  position: absolute; width: .5vw; height: 3.2vw; border-radius: .1vw;
+  background: linear-gradient(#f4ead0, #cbbd99);
+  animation: bob var(--bob, 6s) ease-in-out infinite alternate;
+}
+.flame {
+  position: absolute; left: 50%; top: -1.3vw; width: .7vw; height: 1.3vw; margin-left: -.35vw;
+  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+  background: radial-gradient(ellipse at 50% 70%, #fff6d0 0 25%, var(--flame) 45%, rgba(255, 140, 40, 0) 75%);
+  box-shadow: 0 0 1.4vw .5vw rgba(255, 190, 90, .5);
+  transform-origin: bottom center; animation: flicker .18s ease-in-out infinite alternate; transition: opacity .5s;
+}
+.candle.out .flame { opacity: 0; }
+@keyframes bob { from { transform: translateY(-.8vh); } to { transform: translateY(.8vh); } }
+@keyframes flicker { from { transform: scale(1, 1) rotate(-2deg); } to { transform: scale(.92, 1.08) rotate(2deg); } }
+
+.shade {
+  position: absolute; inset: 0; z-index: 4; pointer-events: none; opacity: var(--dim); transition: opacity 1.2s ease;
+  background: radial-gradient(ellipse 28% 40% at 50% 64%, transparent 0, rgba(0, 0, 0, .88) 70%);
+}
+
+.dais {
+  position: absolute; left: 50%; bottom: 12vh; z-index: 5; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center;
+  transition: transform .8s ease;
+}
+.hall.revealing .dais { transform: translate(-50%, -27vh); } /* the hat rises to the upper middle; the banner unfurls below it */
+.dais::before {
+  content: ""; position: absolute; left: 50%; bottom: 0; width: 60vh; height: 70vh; transform: translateX(-50%); pointer-events: none;
+  background: radial-gradient(ellipse 40% 50% at 50% 60%, rgba(255, 220, 150, .14), transparent 70%);
+}
+.stool { width: 30vh; height: 18vh; transition: opacity .5s ease, transform .8s ease; }
+.hall.revealing .stool { opacity: 0; transform: translateY(8vh); } /* left behind as the hat rises */
+.hat {
+  width: 36vh; height: 36vh; margin-bottom: -5vh; position: relative; transform-origin: 50% 90%;
+  filter: drop-shadow(0 0 1.2vh rgba(255, 205, 130, .45)) drop-shadow(0 2vh 2vh rgba(0, 0, 0, .6));
+  transition: transform .8s cubic-bezier(.3, 1.4, .5, 1), filter .8s;
+}
+.hat svg { width: 100%; height: 100%; overflow: visible; }
+.hat .mouth { transform-box: fill-box; transform-origin: 50% 0; }
+.hat .eye-open, .hat .eye-shut { transition: opacity .3s; }
+.hat .eye-shut { opacity: 0; }
+.hat.asleep { transform: rotate(-5deg) scale(.94, .88); filter: brightness(.9) drop-shadow(0 0 1.2vh rgba(255, 205, 130, .4)) drop-shadow(0 2vh 2vh rgba(0, 0, 0, .6)); }
+.hat.asleep svg { transform-origin: 50% 90%; animation: breathe 4s ease-in-out infinite alternate; }
+.hat.asleep .eye-open, .hat.thinking .eye-open { opacity: 0; }
+.hat.asleep .eye-shut, .hat.thinking .eye-shut { opacity: 1; }
+.hat.thinking { animation: ponder 1.4s ease-in-out infinite alternate; }
+.hat.shout { animation: shout .6s cubic-bezier(.3, 1.6, .5, 1) both; }
+@keyframes breathe { from { transform: scaleY(1); } to { transform: scaleY(.96); } }
+@keyframes ponder { from { transform: rotate(-4deg); } to { transform: rotate(4deg); } }
+@keyframes shout { 0% { transform: scale(1); } 40% { transform: scale(1.18) translateY(-2vh); } 100% { transform: scale(1.06); } }
+
+.name {
+  position: absolute; top: 33vh; left: 0; right: 0; z-index: 6; margin: 0; text-align: center;
+  font-family: var(--cinzel); font-weight: 700; font-size: 5.5vh; letter-spacing: .04em; color: var(--gold-soft);
+  text-shadow: 0 0 2vh rgba(226, 177, 60, .6); opacity: 0; transform: translateY(1.5vh); transition: opacity 1s, transform 1s, top .8s ease;
+}
+.hall.revealing .name { top: 3vh; } /* above the risen hat */
+.name.show { opacity: 1; transform: none; }
+.subtitle {
+  position: absolute; left: 12vw; right: 12vw; bottom: 3vh; z-index: 6; margin: 0; min-height: 2.7em;
+  text-align: center; font-size: 3.6vh; line-height: 1.35; font-style: italic; text-shadow: 0 .3vh .8vh #000, 0 0 2vh #000;
+}
+.subtitle.shout { font-family: var(--cinzel); font-style: normal; font-weight: 700; font-size: 4.6vh; color: #fff; }
+.subtitle .w { opacity: 0; transition: opacity .25s; }
+.subtitle .w.on { opacity: 1; }
+
+.reveal { position: absolute; inset: 0; z-index: 7; display: grid; place-items: start center; padding-top: 48vh; pointer-events: none; } /* just below the risen hat */
+.reveal[hidden] { display: none; }
+.reveal.play { animation: flash 1.4s ease-out both; }
+.reveal-banner {
+  padding: 4vh 8vw 9vh; filter: drop-shadow(0 0 4vh var(--house));
+  background: linear-gradient(color-mix(in srgb, var(--house) 75%, #000), color-mix(in srgb, var(--house) 35%, #000));
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 82%, 0 100%);
+}
+.reveal.play .reveal-banner { animation: unfurl 1s .15s cubic-bezier(.2, .8, .2, 1) both; }
+.reveal-banner span {
+  font-family: var(--cinzel); font-weight: 700; font-size: 12vh; letter-spacing: .08em; text-transform: uppercase;
+  color: #fff; text-shadow: 0 .4vh 1vh rgba(0, 0, 0, .7), 0 0 3vh rgba(255, 255, 255, .45);
+}
+@keyframes flash {
+  0% { background: rgba(255, 255, 255, .9); }
+  30% { background: radial-gradient(circle, color-mix(in srgb, var(--house) 55%, transparent), transparent 65%); }
+  100% { background: radial-gradient(circle, color-mix(in srgb, var(--house) 30%, transparent), transparent 65%); }
+}
+@keyframes unfurl {
+  from { clip-path: polygon(0 0, 100% 0, 100% 0, 50% 0, 0 0); }
+  to { clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 82%, 0 100%); }
+}
+.sparks { z-index: 8; pointer-events: none; }
+
+.picker {
+  position: absolute; left: 50%; bottom: 5vh; z-index: 9; width: min(560px, calc(100vw - 32px));
+  transform: translateX(-50%); transition: opacity .6s, transform .6s;
+}
+.picker.away { opacity: 0; transform: translate(-50%, 4vh); pointer-events: none; }
+.picker label { display: block; margin-bottom: 1vh; text-align: center; font-size: 2.8vh; font-style: italic; color: var(--gold-soft); text-shadow: 0 0 1.5vh #000; }
+.scroll {
+  color: #f5e7c4; border: 1px solid rgba(226, 177, 60, .75); border-radius: 3px; box-shadow: 0 0 3vh rgba(0, 0, 0, .6);
+  background: rgba(10, 8, 14, .78); backdrop-filter: blur(4px);
+}
+.picker input {
+  width: 100%; padding: 1.4vh 2vh; border: 0; border-radius: 3px; background: transparent; color: #f5e7c4;
+  font-family: var(--cinzel); font-size: 2.3vh; letter-spacing: .15em; text-align: center;
+}
+.picker input::placeholder { color: rgba(245, 231, 196, .5); }
+.picker input:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+.options { list-style: none; margin: 0; padding: .5vh 0; max-height: 40vh; overflow: auto; border-bottom: 1px solid rgba(226, 177, 60, .3); }
+.options[hidden] { display: none; }
+.options li { display: flex; justify-content: space-between; gap: 1em; padding: .8vh 2vh; font-size: 2.2vh; cursor: pointer; }
+.options li small { opacity: .65; }
+.options li[aria-selected="true"] { background: rgba(226, 177, 60, .16); }
+.notice { position: absolute; inset: auto 16px 12vh; z-index: 9; text-align: center; font-size: 2.6vh; }
+.notice a { color: var(--gold-soft); }
+.hint { position: absolute; right: 2vh; bottom: 1vh; z-index: 9; margin: 0; font-size: 1.5vh; opacity: .45; }
+.hint.muted::before { content: "Muted · "; color: var(--gold-soft); }
+
+@media (prefers-reduced-motion: reduce) {
+  .clouds, .banner, .candle, .flame, .hat.asleep svg, .hat.thinking { animation: none; }
+}

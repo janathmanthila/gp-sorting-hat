@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>The Sorting Ceremony</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><path d='M4 28 Q16 22 28 28 L22 26 Q18 12 24 4 Q12 8 10 26 Z' fill='%23a87a46'/></svg>">
+  <link rel="stylesheet" href="/css/fonts.css">
+  <link rel="stylesheet" href="/css/home.css">
+</head>
+<body>
+  <main class="home">
+    <h1>The Sorting Ceremony</h1>
+    <p class="lede">Prepare the hat's words, then let it sort.</p>
+    <nav class="doors">
+      <a class="door" href="/prepare">
+        <span class="door-title">Prepare</span>
+        <span class="door-text">Upload the data, write and review the speeches, give the hat its voice.</span>
+      </a>
+      <a class="door" href="/show">
+        <span class="door-title">Show</span>
+        <span class="door-text">The Great Hall. Pick a name and let the hat decide.</span>
+      </a>
+    </nav>
+    <p id="status" class="status" aria-live="polite"></p>
+  </main>
+  <script>
+    fetch('/api/state').then(r => r.json()).then(s => {
+      const text = { empty: 'No speeches yet.', generating: 'Writing speeches…', review: 'Speeches waiting for review.', voicing: 'Giving the hat its voice…', ready: `Ready: ${s.people} people can be sorted.` };
+      document.getElementById('status').textContent = text[s.phase] || '';
+    });
+  </script>
+</body>
+</html>

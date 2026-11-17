@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Prepare · Sorting Ceremony</title>
+  <link rel="stylesheet" href="/css/fonts.css">
+  <link rel="stylesheet" href="/css/prepare.css">
+</head>
+<body>
+  <header class="bar">
+    <a href="/" class="back">← Home</a>
+    <h1>Prepare</h1>
+    <span id="phase" class="phase"></span>
+  </header>
+  <main class="wrap">
+    <p id="error" class="error" role="alert" hidden></p>
+
+    <section class="card" id="upload-card">
+      <h2>1 · New set</h2>
+      <p class="muted">Upload the employee file (any columns; only ID, names, department and Star Events are read) and the House Draft export.</p>
+      <div class="files">
+        <label>Employee file <input type="file" id="input-file" accept=".xlsx"></label>
+        <label>House assignments <input type="file" id="houses-file" accept=".xlsx"></label>
+      </div>
+      <button id="check" class="btn">Check files</button>
+      <div id="summary" hidden>
+        <p id="summary-text"></p>
+        <div id="traits" class="traits"></div>
+        <button id="generate" class="btn primary">Generate speeches</button>
+      </div>
+    </section>
+
+    <section class="card" id="progress-card" hidden>
+      <h2 id="progress-title"></h2>
+      <progress id="progress" max="1" value="0"></progress>
+      <p id="progress-text" class="muted"></p>
+      <button id="cancel" class="btn" hidden>Cancel voicing</button>
+    </section>
+
+    <section class="card" id="voice-card">
+      <h2>Hat voice</h2>
+      <p class="muted">Current voice: <strong id="voice-name"></strong>. Make samples to compare them by ear.</p>
+      <button id="samples" class="btn">Make samples</button>
+      <ul id="sample-list" class="samples"></ul>
+    </section>
+
+    <section class="card" id="review-card" hidden>
+      <div class="toolbar">
+        <h2 id="review-title">2 · Review</h2>
+        <input id="search" type="search" placeholder="Search names…" aria-label="Search names">
+        <label class="check"><input type="checkbox" id="warnings-only"> Warnings only</label>
+        <span id="counts" class="muted"></span>
+        <button id="generate-missing" class="btn" hidden>Generate missing</button>
+        <button id="approve" class="btn primary">Approve all &amp; voice</button>
+        <button id="revoice" class="btn primary" hidden>Re-voice changes</button>
+      </div>
+      <div id="rows" class="rows"></div>
+    </section>
+  </main>
+  <script src="/js/prepare.js"></script>
+</body>
+</html>

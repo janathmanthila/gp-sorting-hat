@@ -1,0 +1,35 @@
+# The voice jobs. The server runs: docker compose run --rm -T --name ceremony-voice-job <voice-chatterbox|voice> [--samples]
+x-job: &job
+  init: true
+  user: "${CEREMONY_UID:-1000}:${CEREMONY_GID:-1000}"
+  volumes:
+    # server.js creates the workspace and sets CEREMONY_WORKSPACE; never let Docker create it (it would be root-owned).
+    - type: bind
+      source: "${CEREMONY_WORKSPACE:-./workspace}"
+      target: /work
+      bind:
+        create_host_path: false
+
+services:
+  # Kokoro: fast fallback voices (bm_*).
+  voice:
+    <<: *job
+    build: ./voice
+    image: ceremony-voice
+    environment:
+      HOME: /tmp
+
+  # Chatterbox: the hat. cb-turbo (default) runs one worker with TURBO_THREADS (default WORKERS x TORCH_THREADS).
+  # cb-hat, the standard model, is slow on CPU: each worker is a process with its own ~3.6 GB model.
+  voice-chatterbox:
+    <<: *job
+    build: ./voice-chatterbox
+    image: ceremony-voice-chatterbox
+    mem_limit: 9g
+    environment:
+      HOME: /tmp
+      WORKERS: "${WORKERS:-2}"
+      TORCH_THREADS: "${TORCH_THREADS:-4}"
+      TURBO_THREADS: "${TURBO_THREADS:-}"
+      EXAGGERATION: "${EXAGGERATION:-1.1}"
+      CFG_WEIGHT: "${CFG_WEIGHT:-0.25}"
